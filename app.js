@@ -141,7 +141,7 @@ function formatDateTime(isoString) {
 function getPromptText() {
   return [
     `请基于 Wan 2.7 生成一张中文家庭报平安视觉卡片。`,
-    `报平安的人：${contact.sender}`,
+    `发送人：${contact.sender}`,
     `接收人：${contact.receiver}`,
     `今日状态：${creative.status}`,
     `情绪关键词：${creative.mood}`,

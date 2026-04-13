@@ -35,7 +35,7 @@ https://jceasywin.github.io/peace-checkin-web/?sender=妈妈&receiver=佳琛&fam
 
 支持的参数：
 
-- `sender` 或 `from`：报平安的人
+- `sender` 或 `from`：发送人
 - `receiver` 或 `to`：接收人
 - `family`：家庭标识，用来区分不同家庭或测试环境
 - `status`：今日状态，例如 `已到家`
