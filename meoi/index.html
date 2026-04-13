@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MEOI | Meow Owner Index</title>
+  <style>
+    :root {
+      --paper: #fbfbf7;
+      --ink: #222426;
+      --muted: #646a67;
+      --line: #d9ded7;
+      --teal: #0f8f8a;
+      --coral: #e65443;
+      --leaf: #b5d334;
+      --yellow: #f1c64b;
+      --white: #ffffff;
+      --shadow: 0 18px 44px rgba(24, 28, 28, 0.13);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(15, 143, 138, 0.08) 0 1px, transparent 1px 100%),
+        linear-gradient(180deg, rgba(230, 84, 67, 0.07) 0 1px, transparent 1px 100%),
+        var(--paper);
+      background-size: 42px 42px;
+    }
+
+    button, input { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    img { max-width: 100%; display: block; }
+
+    .app { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 40px; }
+    .masthead { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr); gap: 28px; align-items: stretch; min-height: calc(100vh - 64px); }
+    .intro { align-self: center; padding: 14px 0; }
+    .eyebrow { display: inline-flex; gap: 8px; align-items: center; margin: 0 0 20px; color: var(--teal); font-size: 13px; font-weight: 800; letter-spacing: 0; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 38px; height: 10px; background: var(--leaf); border: 2px solid var(--ink); border-radius: 8px; box-shadow: 4px 4px 0 var(--yellow); }
+    h1 { margin: 0; max-width: 760px; font-size: clamp(42px, 8vw, 92px); line-height: 0.93; letter-spacing: 0; }
+    .intro p { max-width: 620px; margin: 22px 0 0; color: var(--muted); font-size: clamp(17px, 2.4vw, 22px); line-height: 1.62; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 20px; border: 2px solid var(--ink); border-radius: 8px; background: var(--ink); color: var(--white); font-weight: 800; box-shadow: 5px 5px 0 var(--yellow); transition: transform 160ms ease, box-shadow 160ms ease; text-decoration: none; }
+    .btn:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 var(--yellow); }
+    .btn.secondary { background: var(--white); color: var(--ink); box-shadow: 5px 5px 0 var(--leaf); }
+
+    .cat-panel { min-height: 520px; border: 2px solid var(--ink); border-radius: 8px; background: var(--white); overflow: hidden; box-shadow: var(--shadow); position: relative; }
+    .cat-panel img { width: 100%; height: 100%; min-height: 520px; object-fit: cover; }
+    .cat-placeholder { width: 100%; height: 100%; min-height: 520px; display: grid; place-items: center; background: linear-gradient(135deg, rgba(15, 143, 138, 0.9), rgba(181, 211, 52, 0.84)), var(--paper); color: var(--white); font-size: clamp(72px, 18vw, 180px); font-weight: 900; }
+    .cat-caption { position: absolute; left: 18px; right: 18px; bottom: 18px; display: flex; justify-content: space-between; gap: 12px; align-items: end; color: var(--white); text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45); font-weight: 900; }
+    .cat-caption span:first-child { max-width: 14ch; font-size: clamp(28px, 5vw, 54px); line-height: 0.96; }
+    .cat-caption span:last-child { padding: 7px 10px; border: 2px solid currentColor; border-radius: 8px; font-size: 13px; white-space: nowrap; }
+
+    .panel { margin-top: 36px; padding: 24px; border: 2px solid var(--ink); border-radius: 8px; background: rgba(255, 255, 255, 0.86); box-shadow: var(--shadow); }
+    .upload-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 20px; align-items: center; }
+    .preview { width: 150px; aspect-ratio: 1; border: 2px solid var(--ink); border-radius: 8px; object-fit: cover; background: var(--leaf); }
+    .upload-copy h2, .quiz-head h2, .result-copy h2 { margin: 0; font-size: clamp(25px, 4vw, 40px); letter-spacing: 0; }
+    .upload-copy p, .quiz-head p { margin: 9px 0 0; color: var(--muted); line-height: 1.7; }
+    .file-control { display: inline-flex; margin-top: 16px; padding: 12px 14px; border: 2px dashed var(--teal); border-radius: 8px; background: #eef9f7; color: var(--ink); font-weight: 800; }
+    .file-control input { width: min(100%, 260px); }
+
+    .quiz { margin-top: 22px; display: grid; gap: 14px; }
+    .question { padding: 18px; border: 2px solid var(--line); border-radius: 8px; background: var(--white); }
+    .question.is-missing { border-color: var(--coral); box-shadow: 0 0 0 4px rgba(230, 84, 67, 0.16); }
+    .question h3 { margin: 0 0 14px; font-size: 18px; line-height: 1.55; }
+    .options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .option { min-height: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; padding: 12px; border: 2px solid var(--line); border-radius: 8px; background: #fbfcfb; color: var(--ink); text-align: left; line-height: 1.48; }
+    .option strong { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 2px solid var(--ink); border-radius: 50%; background: var(--yellow); font-size: 14px; }
+    .option[aria-pressed="true"] { border-color: var(--ink); background: #eaf7f2; box-shadow: inset 0 -5px 0 rgba(181, 211, 52, 0.48); }
+
+    .quiz-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 22px; }
+    .status { min-height: 24px; color: var(--coral); font-weight: 800; }
+    .result-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 430px); gap: 24px; align-items: start; }
+    .score-board { display: grid; gap: 12px; margin-top: 18px; }
+    .score-row { display: grid; grid-template-columns: 86px minmax(0, 1fr) 40px; gap: 10px; align-items: center; font-weight: 800; }
+    .bar { height: 14px; border: 2px solid var(--ink); border-radius: 8px; background: var(--white); overflow: hidden; }
+    .bar span { display: block; height: 100%; width: 0%; background: var(--teal); }
+
+    .poster { border: 2px solid var(--ink); border-radius: 8px; background: var(--white); overflow: hidden; box-shadow: 9px 9px 0 var(--leaf); }
+    .poster-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--leaf); }
+    .poster-photo.placeholder { display: grid; place-items: center; color: var(--white); background: linear-gradient(135deg, var(--teal), var(--leaf)); font-size: 76px; font-weight: 900; }
+    .poster-body { padding: 22px; }
+    .poster-kicker { margin: 0 0 8px; color: var(--teal); font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 0; }
+    .poster h2 { margin: 0; font-size: clamp(28px, 5vw, 42px); line-height: 1.06; letter-spacing: 0; }
+    .subtitle { margin: 12px 0 0; color: var(--coral); font-size: 18px; font-weight: 900; line-height: 1.45; }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+    .tag { padding: 7px 10px; border: 2px solid var(--ink); border-radius: 8px; background: var(--yellow); font-size: 13px; font-weight: 900; }
+    .poster-text { margin: 0; color: #3d4441; font-size: 15px; line-height: 1.72; }
+    .closing { margin: 18px 0 0; padding-top: 14px; border-top: 2px solid var(--line); font-weight: 900; line-height: 1.5; }
+    .hidden { display: none !important; }
+    canvas { display: none; }
+
+    @media (max-width: 880px) {
+      .masthead, .result-grid, .upload-row { grid-template-columns: 1fr; }
+      .masthead { min-height: auto; }
+      .cat-panel, .cat-panel img, .cat-placeholder { min-height: 420px; }
+      .options { grid-template-columns: 1fr; }
+      .panel { padding: 18px; }
+    }
+
+    @media (max-width: 520px) {
+      .app { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .cat-panel, .cat-panel img, .cat-placeholder { min-height: 360px; }
+      .score-row { grid-template-columns: 62px minmax(0, 1fr) 32px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="masthead" aria-labelledby="page-title">
+      <div class="intro">
+        <p class="eyebrow">MEOI v1</p>
+        <h1 id="page-title">你是哪一种养猫人？</h1>
+        <p>上传一张猫照，回答 20 道题。测的不是猫，而是你和猫一起生活时的关系模式。</p>
+        <div class="actions">
+          <a class="btn" href="#upload">开始测试</a>
+          <a class="btn secondary" href="#result">看看海报</a>
+        </div>
+      </div>
+      <figure class="cat-panel">
+        <div class="cat-placeholder" aria-label="MEOI 猫咪占位视觉">猫</div>
+        <figcaption class="cat-caption">
+          <span>Meow Owner Index</span>
+          <span>20 题</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="panel" id="upload">
+      <div class="upload-row">
+        <div class="preview poster-photo placeholder" id="catPreview" aria-label="猫照片预览">猫</div>
+        <div class="upload-copy">
+          <h2>先交出猫照</h2>
+          <p>默认先用这只猫镇场。换成你家猫以后，结果海报也会一起换图。</p>
+          <label class="file-control"><input id="catUpload" type="file" accept="image/*"></label>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="quizPanel">
+      <div class="quiz-head"><h2>20 道小题</h2><p>每题选一个最像你的反应。别端水，第一直觉通常更准。</p></div>
+      <div class="quiz" id="quiz"></div>
+      <div class="quiz-actions"><button class="btn" id="submitBtn" type="button">生成结果海报</button><button class="btn secondary" id="resetBtn" type="button">重新选择</button><span class="status" id="status" aria-live="polite"></span></div>
+    </section>
+
+    <section class="panel hidden" id="result">
+      <div class="result-grid">
+        <div class="result-copy">
+          <h2 id="resultHeadline">你的 MEOI 结果</h2>
+          <p class="subtitle" id="resultSubtitle"></p>
+          <div class="score-board" id="scoreBoard"></div>
+          <div class="quiz-actions"><button class="btn" id="downloadBtn" type="button">下载海报</button><button class="btn secondary" id="againBtn" type="button">再测一次</button></div>
+        </div>
+        <article class="poster" id="poster">
+          <div class="poster-photo placeholder" id="posterPhoto" aria-label="海报猫照片">猫</div>
+          <div class="poster-body">
+            <p class="poster-kicker">MEOI | Meow Owner Index</p>
+            <h2 id="posterTitle">你是：引导型铲屎官</h2>
+            <p class="subtitle" id="posterSubtitle">你不靠强压推进，而是会用稳定和节奏把猫慢慢带好。</p>
+            <div class="tags" id="posterTags"></div>
+            <p class="poster-text" id="posterText"></p>
+            <p class="closing" id="posterClosing">你不是在硬控它，你是在把关系慢慢带顺。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <canvas id="posterCanvas" width="1080" height="1600"></canvas>
+
+  <script>
+    const dimensions = { P: "宠溺度", C: "照护度", O: "秩序度", E: "情绪投射度", X: "展示表达度", A: "风险焦虑度" };
+
+    const questions = [
+      ["你家猫半夜突然踩着你跑过去，你第一反应通常是？", ["它好可爱，甚至想摸两下", "先看看它是不是哪里不舒服", "立刻清醒，并开始思考是不是该限制它夜间活动"], ["P", "A", "O"]],
+      ["你买猫用品时更像哪一种人？", ["看到它可能会喜欢，就想买", "会认真比对成分、材质和实际需要", "只买真正必要的，不想把家里堆满"], ["P", "C", "O"]],
+      ["猫今天看起来有点反常，你通常会？", ["立刻开始担心，反复观察", "先安静看一阵，判断是不是真的异常", "只要吃喝拉撒正常，就先不放大"], ["A", "C", "O"]],
+      ["你给猫拍照时，最常见的状态是？", ["随手拍，主要是因为太可爱了", "会挑光线、角度和背景", "除非很有必要，不会频繁拍"], ["P", "X", "O"]],
+      ["你更接近下面哪种想法？", ["猫开心最重要", "猫舒服和家里稳定都重要", "不能让猫完全接管这个家"], ["P", "C", "O"]],
+      ["猫在你工作时跳上桌，你通常会？", ["让它待着，甚至顺手摸摸", "先哄一下，再慢慢引开", "直接请下去，桌子就是桌子"], ["P", "C", "O"]],
+      ["你最容易因为什么开心？", ["它今天主动来找我", "它今天状态稳定、吃睡都很好", "我把它照顾得很体面、很舒服"], ["E", "C", "O"]],
+      ["猫不让抱的时候，你通常会？", ["还是想再试一下", "尊重它，当下就不碰了", "本来也不太主动抱它"], ["E", "C", "O"]],
+      ["你更像哪种养猫风格？", ["猫说了算", "我照顾它，也观察它", "我们彼此适应，共同生活"], ["P", "C", "O"]],
+      ["猫打翻了东西，你更可能？", ["先看它有没有受惊", "处理现场，然后默默记住这个风险点", "当场开始调整规则，防止再发生"], ["E", "C", "O"]],
+      ["你买罐头/零食时，最像哪种人？", ["想让它多开心一点", "主要看配方、频率和适配度", "会控制，不想养成太多习惯"], ["P", "C", "O"]],
+      ["猫今天一整天都不太理你，你会？", ["有点失落，想知道是不是我哪里不对", "觉得它可能只是想自己待着", "完全接受，这很正常"], ["E", "C", "O"]],
+      ["朋友来你家，想一直摸你的猫，你通常会？", ["只要猫没跑，我一般不太拦", "会观察猫愿不愿意，再提醒朋友轻一点", "很明确地替猫设边界，不让人随便碰"], ["P", "C", "O"]],
+      ["你看到别人家的猫，你最容易注意到什么？", ["它可不可爱、亲不亲人", "它今天状态怎么样、舒不舒服", "它的毛、脸、气质、照片感强不强"], ["E", "C", "X"]],
+      ["猫生病或不舒服时，你的状态通常是？", ["会非常紧张，脑子一直转", "冷静处理，该看医生就看医生", "先判断严重程度，不会立刻慌乱"], ["A", "C", "O"]],
+      ["你会不会为了猫调整自己的生活？", ["会，而且很多时候很自然", "会调整，但尽量保持平衡", "只做必要调整，不会全盘让位"], ["P", "C", "O"]],
+      ["你最认同下面哪句话？", ["养猫就是要宠", "养猫是长期照顾和理解", "养猫也要有边界和秩序"], ["P", "C", "O"]],
+      ["你给猫布置生活环境时，更像？", ["想让它开心，所以会多给一点", "会认真规划，让它住得舒服", "保持干净、简单、不要太乱"], ["P", "C", "O"]],
+      ["你和猫的关系更像哪一种？", ["我明显更需要它", "我们互相陪伴", "它有它的生活，我有我的生活"], ["E", "C", "O"]],
+      ["做完这个测试，你最希望看到哪种结果？", ["一个很像我、很好晒的标签", "一个能说明我和猫关系模式的结果", "一个不过度煽情、但挺准确的总结"], ["X", "E", "O"]]
+    ];
+
+    const results = {
+      "纯血猫奴": { subtitle: "你负责供奉，它负责存在。", tags: ["很会让步", "猫说了算", "情绪全跟着它走"], text: "你很容易把猫放在优先级很高的位置。它高不高兴、吃得好不好、今天愿不愿意理你，都会影响你的状态。你不是在“养一只猫”，你更像是在认真维持一段由它主导的关系。有时候你也知道自己太宠了，但还是会继续宠下去。", closing: "在这段关系里，你的职位比较像稳定供奉者。" },
+      "引导型铲屎官": { subtitle: "你不靠强压推进，而是会用稳定和节奏把猫慢慢带好。", tags: ["循循善诱", "细心观察", "稳定可靠"], text: "你很会看猫当天的状态，也懂它什么时候需要靠近，什么时候只想自己待着。你不会一味放纵，也不会硬碰硬，而是更擅长用节奏、引导和稳定感，把相处慢慢带到舒服的位置。你对它的好，不靠热闹，不靠仪式感，而靠长期、稳定、不打扰的照顾。这种关系不喧哗，但很深。", closing: "你不是在硬控它，你是在把关系慢慢带顺。" },
+      "卑微供奉者": { subtitle: "你养的不只是猫，是一整套高质量猫生系统。", tags: ["标准很高", "系统型照护", "很会安排"], text: "你对养猫这件事有明显的执行力和标准感。吃什么、用什么、猫砂合不合适、空气流动够不够、活动空间顺不顺，你都在意。你不是随便地爱猫，而是会把这份爱落实成一套长期有效的系统。在你这里，猫通常过得很体面。", closing: "嘴上不说，手上一直在加码。" },
+      "家庭秩序维护员": { subtitle: "你爱猫，但你也爱一个不失控的家。", tags: ["规则明确", "生活稳定", "有爱但不纵容"], text: "你不是不爱猫，你只是很清楚：共同生活不能全靠一时情绪。你愿意照顾它，也愿意为它调整，但你同样在意节奏、边界和长期稳定。你希望猫过得舒服，也希望这个家不要因为爱而彻底失去秩序。你适合那种稳稳当当、长期共处的关系。", closing: "你的爱有结构，所以不容易失控。" },
+      "情绪型共生者": { subtitle: "你和猫之间，不只是陪伴，更像情绪共振。", tags: ["很容易投射", "情绪连接强", "会被猫影响"], text: "你和猫之间的关系，已经不只是“我照顾你、你陪我”那么简单。它今天靠不靠近你、理不理你、情绪平不平稳，你都很容易感觉到。同时，你自己的情绪也会不自觉地流向它。这让你们之间有一种很深的连接感，但也会让你特别在意它的一举一动。", closing: "它不是你的宠物，它更像你生活里的情绪接口。" },
+      "晒猫艺术总监": { subtitle: "你不只是记录猫，你是在经营它的视觉形象。", tags: ["审美在线", "记录欲强", "很会呈现"], text: "你对猫的爱，带着明显的表达欲。你会注意它的光线、姿势、神态、脸是不是够圆、毛是不是够顺、背景干不干净。你不只是想留下照片，你是想把这只猫的魅力准确地传达出去。在你这里，晒猫不是随手一拍，是一种创作行为。", closing: "你家猫不一定知道，但它的视觉总监一直是你。" },
+      "全天候保安": { subtitle: "猫一有风吹草动，你的脑内警报就先响了。", tags: ["风险敏感", "很负责", "容易提前担心"], text: "你对猫的状态变化非常敏感。它一个喷嚏、一次食欲波动、一次反常安静，都可能让你立刻开始检索和排查。你的爱里带着一点紧张感，但这份紧张并不是空的，它通常会变成非常具体的照顾。你有时候会累，但猫也确实被你照顾得很周全。", closing: "你不是大惊小怪，你只是永远在线。" },
+      "边界感室友": { subtitle: "你们彼此有边界，也彼此留空间。", tags: ["有分寸", "不过度拟人", "共同生活型"], text: "你很爱猫，但你不会把一切都无限放大。你尊重它有自己的脾气、自己的节奏、自己的空间，也保留你自己的生活方式。你不需要通过过度照顾来证明爱，也不喜欢把关系做得太黏、太满、太失衡。你更像是在和一只有个性的生物，认真但有分寸地共同生活。", closing: "你们不是谁管理谁，更像住在一起的两位有分寸的成员。" }
+    };
+
+    const state = { answers: Array(questions.length).fill(null), catSrc: null };
+    const quiz = document.querySelector("#quiz");
+    const status = document.querySelector("#status");
+    const resultSection = document.querySelector("#result");
+    const scoreBoard = document.querySelector("#scoreBoard");
+
+    function renderQuiz() {
+      quiz.innerHTML = "";
+      questions.forEach((question, index) => {
+        const card = document.createElement("section");
+        card.className = "question";
+        card.dataset.index = index;
+        card.innerHTML = `<h3>${index + 1}. ${question[0]}</h3><div class="options">${question[1].map((option, optionIndex) => `<button class="option" type="button" data-question="${index}" data-option="${optionIndex}" aria-pressed="false"><strong>${["A", "B", "C"][optionIndex]}</strong><span>${option}</span></button>`).join("")}</div>`;
+        quiz.appendChild(card);
+      });
+    }
+
+    function selectAnswer(questionIndex, optionIndex) {
+      state.answers[questionIndex] = optionIndex;
+      const question = quiz.querySelector(`[data-index="${questionIndex}"]`);
+      question.classList.remove("is-missing");
+      question.querySelectorAll(".option").forEach((button) => button.setAttribute("aria-pressed", button.dataset.option === String(optionIndex)));
+      status.textContent = "";
+    }
+
+    function calculateScores() {
+      const scores = Object.fromEntries(Object.keys(dimensions).map((key) => [key, 0]));
+      state.answers.forEach((answer, index) => { scores[questions[index][2][answer]] += 2; });
+      return scores;
+    }
+
+    function topKey(scores) { return Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0]; }
+
+    function decideType(scores) {
+      const top = topKey(scores);
+      const averagePCO = (scores.P + scores.C + scores.O) / 3;
+      const high = (key) => scores[key] >= 8;
+      const medium = (key) => scores[key] >= 6;
+      const low = (key) => scores[key] <= 4;
+      if (top === "X" || (scores.X >= 4 && scores.X >= averagePCO + 2)) return "晒猫艺术总监";
+      if (top === "A" || (scores.A >= 4 && scores.C >= 4)) return "全天候保安";
+      if (top === "E" && (scores.P >= 4 || scores.C >= 4)) return "情绪型共生者";
+      if (top === "P" && !high("O")) return "纯血猫奴";
+      if (high("C") && high("O") && scores.C + scores.O >= scores.P + scores.E + scores.X + scores.A) return "卑微供奉者";
+      if (top === "O" && medium("C") && low("E") && low("P")) return "家庭秩序维护员";
+      if (high("O") && !high("C") && low("E") && low("P")) return "边界感室友";
+      return "引导型铲屎官";
+    }
+
+    function renderScores(scores) {
+      const maxPossible = 40;
+      scoreBoard.innerHTML = Object.entries(dimensions).map(([key, label]) => {
+        const width = Math.round((scores[key] / maxPossible) * 100);
+        return `<div class="score-row"><span>${key}｜${label.slice(0, 2)}</span><span class="bar"><span style="width: ${width}%"></span></span><span>${scores[key]}</span></div>`;
+      }).join("");
+    }
+
+    function renderResult(type, scores) {
+      const data = results[type];
+      document.querySelector("#resultHeadline").textContent = `你是：${type}`;
+      document.querySelector("#resultSubtitle").textContent = data.subtitle;
+      document.querySelector("#posterTitle").textContent = `你是：${type}`;
+      document.querySelector("#posterSubtitle").textContent = data.subtitle;
+      document.querySelector("#posterTags").innerHTML = data.tags.map((tag) => `<span class="tag">${tag}</span>`).join("");
+      document.querySelector("#posterText").textContent = data.text;
+      document.querySelector("#posterClosing").textContent = data.closing;
+      renderScores(scores);
+      resultSection.classList.remove("hidden");
+      resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function validateAnswers() {
+      const missingIndex = state.answers.findIndex((answer) => answer === null);
+      quiz.querySelectorAll(".question").forEach((question) => question.classList.remove("is-missing"));
+      if (missingIndex === -1) return true;
+      const missing = quiz.querySelector(`[data-index="${missingIndex}"]`);
+      missing.classList.add("is-missing");
+      missing.scrollIntoView({ behavior: "smooth", block: "center" });
+      status.textContent = `第 ${missingIndex + 1} 题还没选。`;
+      return false;
+    }
+
+    function resetQuiz() {
+      state.answers.fill(null);
+      quiz.querySelectorAll(".option").forEach((button) => button.setAttribute("aria-pressed", "false"));
+      quiz.querySelectorAll(".question").forEach((question) => question.classList.remove("is-missing"));
+      resultSection.classList.add("hidden");
+      status.textContent = "";
+      document.querySelector("#quizPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+      const chars = Array.from(text);
+      let line = "";
+      for (const char of chars) {
+        const testLine = line + char;
+        if (ctx.measureText(testLine).width > maxWidth && line) { ctx.fillText(line, x, y); line = char; y += lineHeight; } else { line = testLine; }
+      }
+      if (line) ctx.fillText(line, x, y);
+      return y + lineHeight;
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    async function downloadPoster() {
+      const canvas = document.querySelector("#posterCanvas");
+      const ctx = canvas.getContext("2d");
+      const title = document.querySelector("#posterTitle").textContent;
+      const subtitle = document.querySelector("#posterSubtitle").textContent;
+      const tags = Array.from(document.querySelectorAll("#posterTags .tag")).map((tag) => tag.textContent);
+      const text = document.querySelector("#posterText").textContent;
+      const closing = document.querySelector("#posterClosing").textContent;
+      const image = state.catSrc ? await loadImage(state.catSrc) : null;
+      ctx.fillStyle = "#fbfbf7"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#b5d334"; ctx.fillRect(56, 56, 968, 64);
+      ctx.fillStyle = "#222426"; ctx.font = "800 30px sans-serif"; ctx.fillText("MEOI | Meow Owner Index", 86, 99);
+      const imageX = 56, imageY = 144, imageW = 968, imageH = 520;
+      if (image) {
+        const scale = Math.max(imageW / image.width, imageH / image.height);
+        const cropW = imageW / scale, cropH = imageH / scale;
+        const cropX = (image.width - cropW) / 2, cropY = (image.height - cropH) / 2;
+        ctx.drawImage(image, cropX, cropY, cropW, cropH, imageX, imageY, imageW, imageH);
+      } else {
+        const gradient = ctx.createLinearGradient(imageX, imageY, imageX + imageW, imageY + imageH);
+        gradient.addColorStop(0, "#0f8f8a"); gradient.addColorStop(1, "#b5d334");
+        ctx.fillStyle = gradient; ctx.fillRect(imageX, imageY, imageW, imageH);
+        ctx.fillStyle = "#ffffff"; ctx.font = "900 180px sans-serif"; ctx.fillText("猫", imageX + 394, imageY + 330);
+      }
+      ctx.strokeStyle = "#222426"; ctx.lineWidth = 6; ctx.strokeRect(56, 56, 968, 1488); ctx.strokeRect(imageX, imageY, imageW, imageH);
+      let y = 750;
+      ctx.fillStyle = "#222426"; ctx.font = "900 66px sans-serif"; y = drawWrappedText(ctx, title, 86, y, 908, 78);
+      ctx.fillStyle = "#e65443"; ctx.font = "900 34px sans-serif"; y = drawWrappedText(ctx, subtitle, 86, y + 18, 908, 48);
+      let tagX = 86; y += 20; ctx.font = "900 28px sans-serif";
+      tags.forEach((tag) => { const width = ctx.measureText(tag).width + 44; ctx.fillStyle = "#f1c64b"; ctx.fillRect(tagX, y, width, 52); ctx.strokeStyle = "#222426"; ctx.lineWidth = 4; ctx.strokeRect(tagX, y, width, 52); ctx.fillStyle = "#222426"; ctx.fillText(tag, tagX + 22, y + 36); tagX += width + 16; });
+      ctx.fillStyle = "#3d4441"; ctx.font = "500 31px sans-serif"; y = drawWrappedText(ctx, text, 86, y + 104, 908, 48);
+      ctx.strokeStyle = "#d9ded7"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(86, y + 20); ctx.lineTo(994, y + 20); ctx.stroke();
+      ctx.fillStyle = "#222426"; ctx.font = "900 34px sans-serif"; drawWrappedText(ctx, closing, 86, y + 76, 908, 50);
+      const link = document.createElement("a"); link.download = "meoi-poster.png"; link.href = canvas.toDataURL("image/png"); link.click();
+    }
+
+    renderQuiz();
+    renderResult("引导型铲屎官", { P: 0, C: 0, O: 0, E: 0, X: 0, A: 0 });
+    resultSection.classList.add("hidden");
+    quiz.addEventListener("click", (event) => { const button = event.target.closest(".option"); if (!button) return; selectAnswer(Number(button.dataset.question), Number(button.dataset.option)); });
+    document.querySelector("#submitBtn").addEventListener("click", () => { if (!validateAnswers()) return; const scores = calculateScores(); renderResult(decideType(scores), scores); });
+    document.querySelector("#resetBtn").addEventListener("click", resetQuiz);
+    document.querySelector("#againBtn").addEventListener("click", resetQuiz);
+    document.querySelector("#downloadBtn").addEventListener("click", downloadPoster);
+    document.querySelector("#catUpload").addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.catSrc = reader.result;
+        document.querySelector("#catPreview").outerHTML = `<img class="preview" id="catPreview" src="${state.catSrc}" alt="猫照片预览">`;
+        document.querySelector("#posterPhoto").outerHTML = `<img class="poster-photo" id="posterPhoto" src="${state.catSrc}" alt="海报猫照片">`;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
