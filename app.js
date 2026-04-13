@@ -2,6 +2,10 @@ const LOCAL_STORAGE_KEY = "peace-checkin-records";
 const CONTACT_STORAGE_KEY = "peace-checkin-contact";
 const CREATIVE_STORAGE_KEY = "peace-checkin-creative";
 const STATUS_OK = "平安";
+const DEFAULT_SENDER = "妈妈";
+const DEFAULT_RECEIVER = "臭哄小榴莲";
+const LEGACY_DEMO_SENDERS = new Set(["叶酱", "爸爸"]);
+const LEGACY_DEMO_RECEIVERS = new Set(["佳琛"]);
 
 const config = window.PEACE_CHECKIN_CONFIG || {};
 const params = new URLSearchParams(window.location.search);
@@ -50,29 +54,44 @@ const supabaseClient = getSupabaseClient();
 
 function getInitialContact() {
   const saved = loadJson(CONTACT_STORAGE_KEY, {});
+  const hasUrlSender = params.has("sender") || params.has("from");
+  const hasUrlReceiver = params.has("receiver") || params.has("to");
+  const savedSender = normalizeName(saved.sender);
+  const savedReceiver = normalizeName(saved.receiver);
+  const shouldMigrateLegacyContact =
+    !hasUrlSender &&
+    !hasUrlReceiver &&
+    LEGACY_DEMO_SENDERS.has(savedSender) &&
+    LEGACY_DEMO_RECEIVERS.has(savedReceiver);
   const sender =
     params.get("sender") ||
     params.get("from") ||
-    saved.sender ||
+    (shouldMigrateLegacyContact ? DEFAULT_SENDER : saved.sender) ||
     config.defaultSender ||
-    "妈妈";
+    DEFAULT_SENDER;
   const receiver =
     params.get("receiver") ||
     params.get("to") ||
-    saved.receiver ||
+    (shouldMigrateLegacyContact ? DEFAULT_RECEIVER : saved.receiver) ||
     config.defaultReceiver ||
-    "臭哄小榴莲";
+    DEFAULT_RECEIVER;
   const familyKey =
     params.get("family") ||
     saved.familyKey ||
     config.defaultFamilyKey ||
     "default-family";
 
-  return {
+  const nextContact = {
     sender: normalizeName(sender),
     receiver: normalizeName(receiver),
     familyKey: normalizeName(familyKey),
   };
+
+  if (shouldMigrateLegacyContact) {
+    saveJson(CONTACT_STORAGE_KEY, nextContact);
+  }
+
+  return nextContact;
 }
 
 function getInitialCreative() {
