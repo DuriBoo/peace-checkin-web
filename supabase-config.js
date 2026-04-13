@@ -2,7 +2,7 @@ window.PEACE_CHECKIN_CONFIG = {
   supabaseUrl: "",
   supabaseAnonKey: "",
   tableName: "peace_checkins",
-  defaultSender: "爸爸",
-  defaultReceiver: "佳琛",
+  defaultSender: "妈妈",
+  defaultReceiver: "臭哄小榴莲",
   defaultFamilyKey: "jiachen-family",
 };

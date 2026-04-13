@@ -55,13 +55,13 @@ function getInitialContact() {
     params.get("from") ||
     saved.sender ||
     config.defaultSender ||
-    "爸爸";
+    "妈妈";
   const receiver =
     params.get("receiver") ||
     params.get("to") ||
     saved.receiver ||
     config.defaultReceiver ||
-    "佳琛";
+    "臭哄小榴莲";
   const familyKey =
     params.get("family") ||
     saved.familyKey ||
@@ -158,7 +158,7 @@ function getShareText() {
     `今日平安：${contact.sender} 已向 ${contact.receiver} 报平安。`,
     `状态：${creative.status}`,
     `时间：${formatDateTime(new Date().toISOString())}`,
-    `这是一张由「安心报平安卡片 Skill」生成的家庭关怀卡。`,
+    `这是一张由「报个平安 Skill」生成的家庭关怀卡。`,
   ].join("\n");
 }
 

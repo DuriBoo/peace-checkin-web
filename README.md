@@ -5,7 +5,7 @@
 ## 现在已经实现
 
 - 一个大按钮：`我今天平安`
-- 首页文案支持动态联系人，例如 `爸爸` 给 `佳琛` 报平安
+- 首页文案支持动态联系人，例如 `妈妈` 给 `臭哄小榴莲` 报平安
 - 点击后显示包含“时间 + 接收人 + 今日状态”的成功卡片
 - 点击后出现烟花动画
 - 支持接 Supabase，把每日确认记录同步到云端并跨设备读取
@@ -15,7 +15,7 @@
 
 ## 参赛作品定位
 
-当前项目已升级为「安心报平安卡片 Skill」的 demo：把一句普通的“我今天平安”，转化成可编辑、可复用、可分享的家庭报平安视觉卡片工作流。
+当前项目已升级为「报个平安 Skill」的 demo：把一句普通的“我今天平安”，转化成可编辑、可复用、可分享的家庭报平安视觉卡片工作流。
 
 当前版本已经完成关键词编辑、Prompt 生成、成功卡片、分享文案和记录保存。Wan API 的真实图片生成需要下一步通过后端代理接入，避免把 API Key 暴露在 GitHub Pages 前端。
 
@@ -27,10 +27,10 @@ docs/contest-submission.md
 
 ## 动态联系人
 
-页面默认是 `爸爸` 给 `佳琛` 报平安。也可以通过网址参数打开不同联系人版本：
+页面默认是 `妈妈` 给 `臭哄小榴莲` 报平安。也可以通过网址参数打开不同联系人版本：
 
 ```text
-https://jceasywin.github.io/peace-checkin-web/?sender=妈妈&receiver=佳琛&family=home
+https://jceasywin.github.io/peace-checkin-web/?sender=妈妈&receiver=臭哄小榴莲&family=home
 ```
 
 支持的参数：
@@ -105,8 +105,8 @@ window.PEACE_CHECKIN_CONFIG = {
   supabaseUrl: "你的 Project URL",
   supabaseAnonKey: "你的 anon public key",
   tableName: "peace_checkins",
-  defaultSender: "爸爸",
-  defaultReceiver: "佳琛",
+  defaultSender: "妈妈",
+  defaultReceiver: "臭哄小榴莲",
   defaultFamilyKey: "jiachen-family",
 };
 ```
