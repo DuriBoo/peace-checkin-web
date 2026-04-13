@@ -12,7 +12,7 @@
     <main class="app-shell">
       <section class="status-area" aria-labelledby="page-title">
         <div class="topline">
-          <span class="brand">今日平安</span>
+          <span class="brand">安心报平安卡片 Skill</span>
           <span id="status-pill" class="status-pill">等待报平安</span>
         </div>
 
@@ -25,7 +25,7 @@
 
         <p id="today-label" class="date-label"></p>
         <h1 id="page-title">今天，<span id="sender-name">爸爸</span> 给 <span id="receiver-name">佳琛</span> 报个平安。</h1>
-        <p id="message" class="message">点完以后，接收人就能跨设备看到今日状态。</p>
+        <p id="message" class="message">点完以后，接收人就能看到今日状态；下方会同步生成可给 Wan 使用的视觉卡片 Prompt。</p>
 
         <form id="contact-form" class="contact-form">
           <label>
@@ -38,6 +38,39 @@
           </label>
           <button class="contact-save" type="submit">更新联系人</button>
         </form>
+
+        <section class="skill-panel" aria-labelledby="skill-title">
+          <div class="panel-heading">
+            <p class="section-kicker">Wan Skill 工作台</p>
+            <h2 id="skill-title">改这几项，就能生成一张报平安视觉卡。</h2>
+          </div>
+
+          <form id="creative-form" class="creative-form">
+            <label>
+              今日状态
+              <input id="status-input" name="status" />
+            </label>
+            <label>
+              画面风格
+              <select id="style-select" name="style">
+                <option value="手写卡片">手写卡片</option>
+                <option value="国风水彩">国风水彩</option>
+                <option value="家庭相册">家庭相册</option>
+                <option value="手机通知卡">手机通知卡</option>
+                <option value="温暖插画">温暖插画</option>
+              </select>
+            </label>
+            <label class="wide-field">
+              情绪关键词
+              <input id="mood-input" name="mood" />
+            </label>
+            <label class="wide-field">
+              画面补充
+              <textarea id="details-input" name="details" rows="3"></textarea>
+            </label>
+            <button class="contact-save" type="submit">刷新 Prompt</button>
+          </form>
+        </section>
 
         <button id="checkin-button" class="checkin-button" type="button">
           我今天平安
@@ -64,6 +97,45 @@
         </article>
 
         <p id="setup-note" class="setup-note" hidden></p>
+      </section>
+
+      <section class="workflow-area" aria-labelledby="workflow-title">
+        <div class="panel-heading">
+          <p class="section-kicker">可复用 Skill 输出</p>
+          <h2 id="workflow-title">输入一句平安，输出一张可分享的安心卡。</h2>
+        </div>
+
+        <div class="workflow-grid">
+          <article class="workflow-card">
+            <p class="workflow-label">输入</p>
+            <p id="before-copy" class="workflow-copy"></p>
+          </article>
+          <article class="workflow-card after">
+            <p class="workflow-label">输出预览</p>
+            <div class="visual-card">
+              <p id="visual-date" class="visual-date"></p>
+              <h3 id="visual-status"></h3>
+              <p id="visual-line"></p>
+              <span id="visual-style" class="visual-style"></span>
+            </div>
+          </article>
+        </div>
+
+        <div class="prompt-box">
+          <div class="prompt-header">
+            <span>Wan Prompt</span>
+            <button id="copy-prompt" type="button">复制 Prompt</button>
+          </div>
+          <pre id="prompt-preview"></pre>
+        </div>
+
+        <div class="share-box">
+          <div class="prompt-header">
+            <span>分享文案</span>
+            <button id="copy-share" type="button">复制文案</button>
+          </div>
+          <p id="share-copy"></p>
+        </div>
       </section>
 
       <section class="history-area" aria-labelledby="history-title">

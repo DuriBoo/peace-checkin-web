@@ -1,5 +1,6 @@
 const LOCAL_STORAGE_KEY = "peace-checkin-records";
 const CONTACT_STORAGE_KEY = "peace-checkin-contact";
+const CREATIVE_STORAGE_KEY = "peace-checkin-creative";
 const STATUS_OK = "平安";
 
 const config = window.PEACE_CHECKIN_CONFIG || {};
@@ -11,6 +12,11 @@ const senderInput = document.querySelector("#sender-input");
 const receiverInput = document.querySelector("#receiver-input");
 const senderName = document.querySelector("#sender-name");
 const receiverName = document.querySelector("#receiver-name");
+const creativeForm = document.querySelector("#creative-form");
+const statusInput = document.querySelector("#status-input");
+const styleSelect = document.querySelector("#style-select");
+const moodInput = document.querySelector("#mood-input");
+const detailsInput = document.querySelector("#details-input");
 const message = document.querySelector("#message");
 const statusPill = document.querySelector("#status-pill");
 const todayLabel = document.querySelector("#today-label");
@@ -21,12 +27,22 @@ const successTime = document.querySelector("#success-time");
 const successReceiver = document.querySelector("#success-receiver");
 const successStatus = document.querySelector("#success-status");
 const setupNote = document.querySelector("#setup-note");
+const beforeCopy = document.querySelector("#before-copy");
+const visualDate = document.querySelector("#visual-date");
+const visualStatus = document.querySelector("#visual-status");
+const visualLine = document.querySelector("#visual-line");
+const visualStyle = document.querySelector("#visual-style");
+const promptPreview = document.querySelector("#prompt-preview");
+const shareCopy = document.querySelector("#share-copy");
+const copyPromptButton = document.querySelector("#copy-prompt");
+const copyShareButton = document.querySelector("#copy-share");
 const canvas = document.querySelector("#fireworks");
 const ctx = canvas.getContext("2d");
 
 let particles = [];
 let animationFrame = null;
 let contact = getInitialContact();
+let creative = getInitialCreative();
 let records = {};
 let isSaving = false;
 
@@ -56,6 +72,24 @@ function getInitialContact() {
     sender: normalizeName(sender),
     receiver: normalizeName(receiver),
     familyKey: normalizeName(familyKey),
+  };
+}
+
+function getInitialCreative() {
+  const saved = loadJson(CREATIVE_STORAGE_KEY, {});
+  const status = params.get("status") || saved.status || STATUS_OK;
+  const style = params.get("style") || saved.style || "手写卡片";
+  const mood = params.get("mood") || saved.mood || "放心、温暖、傍晚、家人";
+  const details =
+    params.get("details") ||
+    saved.details ||
+    "画面像一张发给家人的安心卡片，有留白、有日期、有一句清楚的报平安文字。";
+
+  return {
+    status: normalizeName(status) || STATUS_OK,
+    style: normalizeName(style) || "手写卡片",
+    mood: normalizeName(mood) || "放心、温暖、傍晚、家人",
+    details: normalizeName(details),
   };
 }
 
@@ -102,6 +136,30 @@ function formatDateTime(isoString) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(isoString));
+}
+
+function getPromptText() {
+  return [
+    `请基于 Wan 2.7 生成一张中文家庭报平安视觉卡片。`,
+    `报平安的人：${contact.sender}`,
+    `接收人：${contact.receiver}`,
+    `今日状态：${creative.status}`,
+    `情绪关键词：${creative.mood}`,
+    `画面风格：${creative.style}`,
+    `画面补充：${creative.details}`,
+    `构图要求：竖版手机海报，适合发给家人，主体文字清晰可读，氛围温暖克制，不要夸张庆祝。`,
+    `合规要求：不要出现真实公众人物、商标 Logo、医疗承诺、政治敏感、暴力或恐怖元素。`,
+    `输出重点：让接收人一眼看懂“今天已平安”，并感到安心。`,
+  ].join("\n");
+}
+
+function getShareText() {
+  return [
+    `今日平安：${contact.sender} 已向 ${contact.receiver} 报平安。`,
+    `状态：${creative.status}`,
+    `时间：${formatDateTime(new Date().toISOString())}`,
+    `这是一张由「安心报平安卡片 Skill」生成的家庭关怀卡。`,
+  ].join("\n");
 }
 
 function loadJson(key, fallback) {
@@ -174,7 +232,7 @@ async function saveCheckin() {
     sender_name: contact.sender,
     receiver_name: contact.receiver,
     checkin_date: date,
-    status: STATUS_OK,
+    status: creative.status,
     checked_at: checkedAt,
     updated_at: checkedAt,
   };
@@ -186,7 +244,7 @@ async function saveCheckin() {
         checkedAt,
         receiver: contact.receiver,
         sender: contact.sender,
-        status: STATUS_OK,
+        status: creative.status,
       },
     };
     saveLocalRecords(nextRecords);
@@ -230,6 +288,21 @@ function renderContact() {
   senderName.textContent = contact.sender;
   receiverName.textContent = contact.receiver;
   button.textContent = `${contact.sender}今天平安`;
+}
+
+function renderCreative() {
+  statusInput.value = creative.status;
+  styleSelect.value = creative.style;
+  moodInput.value = creative.mood;
+  detailsInput.value = creative.details;
+
+  beforeCopy.textContent = `${contact.sender} 今天对 ${contact.receiver} 说：${creative.status}`;
+  visualDate.textContent = formatFullDate();
+  visualStatus.textContent = `今日${creative.status}`;
+  visualLine.textContent = `${contact.sender} 已经向 ${contact.receiver} 报平安。`;
+  visualStyle.textContent = `${creative.style} · ${creative.mood}`;
+  promptPreview.textContent = getPromptText();
+  shareCopy.textContent = getShareText();
 }
 
 function renderHistory(nextRecords) {
@@ -279,6 +352,7 @@ function renderState() {
 
   todayLabel.textContent = formatFullDate();
   renderContact();
+  renderCreative();
   renderHistory(records);
   renderSuccessCard(checked);
 
@@ -287,7 +361,7 @@ function renderState() {
     button.classList.add("done");
     statusPill.textContent = "今天已报平安";
     statusPill.classList.add("done");
-    message.textContent = `${contact.receiver}已经能看到${contact.sender}今天平安。`;
+    message.textContent = `${contact.receiver}已经能看到${contact.sender}今天${checked.status}。`;
     lastCheckin.textContent = `今天 ${formatTime(checked.checkedAt)} 已报平安`;
     return;
   }
@@ -311,6 +385,21 @@ function hideSetupNote() {
 function showError(error) {
   const details = error?.message ? `：${error.message}` : "";
   showSetupNote(`云端同步失败${details}`);
+}
+
+async function copyText(text, buttonElement, doneText) {
+  const originalText = buttonElement.textContent;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    buttonElement.textContent = doneText;
+  } catch {
+    buttonElement.textContent = "复制失败";
+  }
+
+  setTimeout(() => {
+    buttonElement.textContent = originalText;
+  }, 1500);
 }
 
 async function refreshRecords() {
@@ -410,6 +499,51 @@ contactForm.addEventListener("submit", async (event) => {
   };
   saveJson(CONTACT_STORAGE_KEY, contact);
   await refreshRecords();
+});
+
+creativeForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  creative = {
+    status: normalizeName(statusInput.value) || STATUS_OK,
+    style: normalizeName(styleSelect.value) || "手写卡片",
+    mood: normalizeName(moodInput.value) || "放心、温暖、傍晚、家人",
+    details: normalizeName(detailsInput.value) || "画面像一张发给家人的安心卡片。",
+  };
+  saveJson(CREATIVE_STORAGE_KEY, creative);
+  renderState();
+});
+
+statusInput.addEventListener("input", () => {
+  creative = { ...creative, status: normalizeName(statusInput.value) || STATUS_OK };
+  saveJson(CREATIVE_STORAGE_KEY, creative);
+  renderCreative();
+});
+
+styleSelect.addEventListener("change", () => {
+  creative = { ...creative, style: normalizeName(styleSelect.value) || "手写卡片" };
+  saveJson(CREATIVE_STORAGE_KEY, creative);
+  renderCreative();
+});
+
+moodInput.addEventListener("input", () => {
+  creative = { ...creative, mood: normalizeName(moodInput.value) };
+  saveJson(CREATIVE_STORAGE_KEY, creative);
+  renderCreative();
+});
+
+detailsInput.addEventListener("input", () => {
+  creative = { ...creative, details: normalizeName(detailsInput.value) };
+  saveJson(CREATIVE_STORAGE_KEY, creative);
+  renderCreative();
+});
+
+copyPromptButton.addEventListener("click", () => {
+  copyText(getPromptText(), copyPromptButton, "已复制");
+});
+
+copyShareButton.addEventListener("click", () => {
+  copyText(getShareText(), copyShareButton, "已复制");
 });
 
 button.addEventListener("click", async () => {

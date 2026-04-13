@@ -9,6 +9,8 @@
   --line: #d8ddd5;
   --shadow: rgba(34, 34, 34, 0.14);
   --wash: rgba(255, 255, 255, 0.72);
+  --mist: #e7efe8;
+  --clay: #b36b49;
 }
 
 * {
@@ -34,6 +36,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -158,7 +161,8 @@ h1 span {
   background: var(--wash);
 }
 
-.contact-form label {
+.contact-form label,
+.creative-form label {
   display: grid;
   gap: 6px;
   color: var(--muted);
@@ -166,7 +170,10 @@ h1 span {
   font-weight: 700;
 }
 
-.contact-form input {
+.contact-form input,
+.creative-form input,
+.creative-form select,
+.creative-form textarea {
   width: 100%;
   min-height: 42px;
   border: 1px solid var(--line);
@@ -177,7 +184,16 @@ h1 span {
   outline: none;
 }
 
-.contact-form input:focus {
+.creative-form textarea {
+  padding-top: 10px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.contact-form input:focus,
+.creative-form input:focus,
+.creative-form select:focus,
+.creative-form textarea:focus {
   border-color: rgba(45, 106, 79, 0.55);
   box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.12);
 }
@@ -192,6 +208,51 @@ h1 span {
   cursor: pointer;
   font-weight: 800;
   white-space: nowrap;
+}
+
+.skill-panel,
+.workflow-area {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(216, 221, 213, 0.9);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top left, rgba(233, 180, 76, 0.16), transparent 34%),
+    rgba(255, 255, 255, 0.64);
+  box-shadow: 0 18px 42px rgba(34, 34, 34, 0.08);
+}
+
+.panel-heading {
+  display: grid;
+  gap: 6px;
+}
+
+.section-kicker {
+  margin: 0;
+  color: var(--clay);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.panel-heading h2,
+.workflow-area h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(22px, 4vw, 34px);
+  line-height: 1.15;
+}
+
+.creative-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.wide-field {
+  grid-column: 1 / -1;
 }
 
 .checkin-button {
@@ -299,6 +360,134 @@ h1 span {
   padding-top: 20px;
 }
 
+.workflow-area {
+  border-top: 0;
+}
+
+.workflow-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
+}
+
+.workflow-card,
+.prompt-box,
+.share-box {
+  border: 1px solid rgba(216, 221, 213, 0.9);
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.workflow-card {
+  min-height: 180px;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+  padding: 18px;
+}
+
+.workflow-card.after {
+  padding: 12px;
+  background: linear-gradient(145deg, rgba(231, 239, 232, 0.95), rgba(255, 253, 248, 0.88));
+}
+
+.workflow-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.workflow-copy {
+  margin: 0;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.visual-card {
+  min-height: 240px;
+  display: grid;
+  align-content: space-between;
+  gap: 18px;
+  padding: 22px;
+  border-radius: 12px;
+  color: #26342d;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(233, 180, 76, 0.35), transparent 24%),
+    radial-gradient(circle at 90% 8%, rgba(207, 92, 108, 0.18), transparent 28%),
+    linear-gradient(150deg, #fff8e8, #dfeee1 56%, #f7f2e8);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.78);
+}
+
+.visual-date,
+.visual-line {
+  margin: 0;
+  color: rgba(38, 52, 45, 0.74);
+  line-height: 1.55;
+}
+
+.visual-card h3 {
+  margin: 0;
+  font-size: clamp(34px, 7vw, 56px);
+  line-height: 0.98;
+}
+
+.visual-style {
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: var(--leaf-dark);
+  background: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.prompt-box,
+.share-box {
+  overflow: hidden;
+}
+
+.prompt-header {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.prompt-header button {
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 12px;
+  color: #ffffff;
+  background: var(--leaf);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.prompt-box pre,
+.share-box p {
+  margin: 0;
+  padding: 14px;
+  color: var(--ink);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.prompt-box pre {
+  max-height: 320px;
+  overflow: auto;
+  font-size: 13px;
+}
+
 .history-area h2 {
   margin: 0 0 12px;
   font-size: 18px;
@@ -368,6 +557,11 @@ h1 span {
   }
 
   .contact-form {
+    grid-template-columns: 1fr;
+  }
+
+  .creative-form,
+  .workflow-grid {
     grid-template-columns: 1fr;
   }
 
