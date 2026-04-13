@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>猫格测试</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="测试进度">
+        <div>
+          <p class="eyebrow">猫格测试</p>
+          <h1>上传猫照，测出它是哪一种猫</h1>
+        </div>
+        <div class="progress-pill">
+          <span id="answeredCount">0</span>/20
+        </div>
+      </section>
+
+      <section class="layout">
+        <aside class="photo-panel">
+          <label class="upload-box" for="catPhoto">
+            <input id="catPhoto" type="file" accept="image/*" />
+            <img id="photoPreview" alt="猫咪照片预览" />
+            <span id="uploadHint">选择一张猫咪照片</span>
+          </label>
+          <input id="catName" class="name-input" type="text" maxlength="12" placeholder="猫咪名字（可选）" />
+          <p class="microcopy">照片只在你的浏览器里使用，用来生成结果海报。</p>
+        </aside>
+
+        <section class="quiz-panel" aria-labelledby="quizTitle">
+          <div class="quiz-head">
+            <p class="eyebrow" id="quizTitle">20 道日常观察题</p>
+            <button id="resetBtn" class="ghost-btn" type="button">重新开始</button>
+          </div>
+          <div id="questions" class="questions"></div>
+          <div class="actions">
+            <button id="resultBtn" class="primary-btn" type="button" disabled>查看猫格结果</button>
+            <p id="missingText" class="missing-text">还差 20 题</p>
+          </div>
+        </section>
+      </section>
+
+      <section id="resultSection" class="result-section" hidden>
+        <div class="result-copy">
+          <p class="eyebrow">测试结果</p>
+          <h2 id="resultTitle"></h2>
+          <div id="resultTags" class="tag-row"></div>
+          <p id="resultSummary" class="summary"></p>
+          <div id="dimensionChips" class="dimension-row"></div>
+          <p id="resultPunchline" class="punchline"></p>
+        </div>
+        <div class="poster-panel">
+          <canvas id="posterCanvas" width="1080" height="1440" aria-label="猫格测试海报"></canvas>
+          <div class="poster-actions">
+            <button id="downloadBtn" class="primary-btn" type="button">下载海报 PNG</button>
+            <button id="rerenderBtn" class="ghost-btn" type="button">刷新海报</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
